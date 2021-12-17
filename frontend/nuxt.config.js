@@ -30,6 +30,20 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/vuetify
     "@nuxtjs/vuetify",
+    // https://www.npmjs.com/package/k-domains
+    [
+      "k-domains",
+      {
+        subDomains: [],
+        rootDomain: "root-domain",
+      },
+    ],
+    [
+      "@nuxtjs/router",
+      {
+        keepDefaultRouter: true,
+      },
+    ],
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -82,8 +96,8 @@ export default {
 
   watchers: {
     webpack: {
-        poll: 1000,
-        aggregateTimeout: 200
-    }
+      poll: 1000,
+      aggregateTimeout: 200,
+    },
   },
 };
