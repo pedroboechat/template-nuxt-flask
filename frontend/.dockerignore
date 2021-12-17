@@ -1,0 +1,11 @@
+node_modules
+.nuxt
+Dockerfile
+.dockerignore
+.editorconfig
+jsconfig.json
+.gitignore
+.eslintrc.js
+.prettierrc
+package-lock.json
+README.md

@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    networks:
+      - main
+    restart: unless-stopped
+    environment:
+      - HOST=$BACKEND_HOST
+      - PORT=$BACKEND_PORT
+      - DEBUG=$BACKEND_DEBUG
+    ports:
+      - $BACKEND_PORT:$BACKEND_PORT
+    volumes:
+      - "./backend:/usr/app"
+    command: python3 ./src/run.py
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    networks:
+      - main  
+    restart: unless-stopped
+    environment:
+      - HOST=$FRONTEND_HOST
+      - PORT=$FRONTEND_PORT
+      - BASE_URL=$BASE_URL
+    ports:
+      - $FRONTEND_PORT:$FRONTEND_PORT
+    volumes:
+      - "./frontend:/usr/app"
+    depends_on:
+      - backend
+    command: npm run docker
+networks:
+  main:
+volumes:
+  backend:
+  frontend:
