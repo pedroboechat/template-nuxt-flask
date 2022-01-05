@@ -1,9 +1,13 @@
 FROM node:16-bullseye
 
-WORKDIR /usr/app
+COPY package.json /usr
 
-COPY package.json .
+WORKDIR /usr
+
+ENV PATH /usr/node_modules/.bin:$PATH
 
 RUN npm install
 
-COPY . .
+COPY . /usr/app
+
+WORKDIR /usr/app
