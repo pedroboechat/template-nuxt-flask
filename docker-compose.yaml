@@ -1,0 +1,74 @@
+version: "3"
+services:
+  database:
+    image: postgres:14.5-bullseye
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=$SQL_USER
+      - POSTGRES_PASSWORD=$SQL_PSWD
+    networks:
+      - main
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - $SQL_PORT:5432
+    volumes:
+      - ./database/data:/var/lib/postgresql/data
+      - ./database/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    networks:
+      - main
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    restart: unless-stopped
+    environment:
+      - HOST=$BACKEND_HOST
+      - PORT=$BACKEND_PORT
+      - DEBUG=$BACKEND_DEBUG
+      - SQL_USER=$SQL_USER
+      - SQL_PSWD=$SQL_PSWD
+      - SQL_HOST=$SQL_HOST
+      - SQL_PORT=$SQL_PORT
+      - SQL_DATABASE=$SQL_DATABASE
+    ports:
+      - $BACKEND_PORT:$BACKEND_PORT
+    volumes:
+      - "./backend:/usr/app"
+    command: python3 -u ./src/run.py
+    depends_on:
+      - database
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    networks:
+      - main
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    restart: unless-stopped
+    environment:
+      - HOST=$FRONTEND_HOST
+      - PORT=$FRONTEND_PORT
+      - BASE_URL=$BASE_URL
+    ports:
+      - $FRONTEND_PORT:$FRONTEND_PORT
+    volumes:
+      - "/usr/app/node_modules"
+      - "./frontend:/usr/app"
+    depends_on:
+      - backend
+    command: npm run docker
+
+networks:
+  main:
